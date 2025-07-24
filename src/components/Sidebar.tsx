@@ -9,6 +9,8 @@ import {
   HiOutlineChartBar,
 } from "react-icons/hi";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
 
 interface SidebarProps {
   onStateChange: (isClosed: boolean) => void;
@@ -19,6 +21,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<string>(""); // Track selected menu
+  const { user, logout } = useAuth();
+  const router = useRouter();
 
   const toggleSidebar = () => {
     setIsClosed((prev) => {
@@ -27,14 +31,20 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
     });
   };
 
-  const handleMenuClick = (menu: string) => {
+  const handleMenuClick = (menu: string, link: string) => {
     setSelectedMenu(menu);
+    router.push(link);
   };
 
   const handleSettingsClick = () => {
     setIsSettingsOpen((prev) => !prev);
     setSelectedMenu("settings");
   }
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   return (
     <nav
@@ -71,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
       <ul className="flex flex-col space-y-1 text-sm">
         <li className="w-full">
           <Button
-            onClick={() => handleMenuClick("home")}
+            onClick={() => handleMenuClick("home", "/")}
             className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
               selectedMenu === "home"
                 ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
@@ -84,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
         </li>
         <li className="w-full">
           <Button
-            onClick={() => handleMenuClick("user")}
+            onClick={() => handleMenuClick("user", "/user")}
             className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
               selectedMenu === "user"
                 ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
@@ -98,7 +108,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
 
         <li className="w-full">
           <Button
-            onClick={() => handleMenuClick("clipboard")}
+            onClick={() => handleMenuClick("clipboard", "/clipboard")}
             className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
               selectedMenu === "clipboard"
                 ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
@@ -139,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
                 return (
                   <li
                     key={i}
-                    onClick={() => handleMenuClick(submenuKey)}
+                    onClick={() => handleMenuClick(submenuKey, `/chart/${i}`)}
                     className={`py-1 px-2 rounded cursor-pointer ${
                       selectedMenu === submenuKey
                         ? "bg-[#E4C77B] text-black"
@@ -172,19 +182,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
         </Button>
 
         {/* Logout Button */}
-        {!isClosed && (
+        {user && (
           <button
-            className={`bg-white text-red-600 font-semibold rounded-md py-2 mt-4 w-full flex items-center justify-center gap-2 ${
-              isClosed ? "justify-center" : ""
-            }`}
+            onClick={handleLogout}
+            className="w-full mt-4 p-2 bg-red-600 text-white rounded hover:bg-red-700 transition flex items-center justify-center gap-2"
           >
             <FaSignOutAlt />
-            Logout
-          </button>
-        )}
-        {isClosed && (
-          <button className="bg-white text-red-600 rounded-md p-2 mt-4 flex items-center justify-center w-full">
-            <FaSignOutAlt />
+            {!isClosed && "Logout"}
           </button>
         )}
       </div>

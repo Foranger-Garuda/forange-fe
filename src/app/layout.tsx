@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import { usePathname } from "next/navigation";
+import { AuthProvider } from "@/lib/auth-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,12 +41,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {showSidebar && <Sidebar onStateChange={setSidebarClosed} />}
-        <main
-          className={`flex-grow transition-all duration-300 overflow-y-auto h-full min-h-screen `}
-        >
-          {children}
-        </main>
+        <AuthProvider>
+          {showSidebar && <Sidebar onStateChange={setSidebarClosed} />}
+          <main
+            className={`flex-grow transition-all duration-300 overflow-y-auto h-full min-h-screen `}
+          >
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   );
