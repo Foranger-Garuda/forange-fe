@@ -1,5 +1,8 @@
-"use client"; 
-import Loading from "@/components/Loading";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import Loading  from "@/components/Loading";
 import { useState } from "react";
 
 export default function HomePage() {
@@ -13,6 +16,15 @@ export default function HomePage() {
       // You can redirect to another page or perform other actions here
     }, 2000);
   };
+
+  const { token } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+    }
+  }, [token, router]);
 
   return (
     <div
