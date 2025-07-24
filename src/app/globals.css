@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -45,7 +46,7 @@
   --color-secondary-ecru: var(--secondary-ecru);
   --color-secondary-ghost-white: var(--secondary-ghost-white);
   --color-secondary-state-blue: var(--secondary-state-blue);
-  --color-secondary-state-red: var(--secondary-state-red);
+  
 }
 
 :root {
@@ -130,6 +131,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', sans-serif; 
   }
   button {
     @apply cursor-pointer;

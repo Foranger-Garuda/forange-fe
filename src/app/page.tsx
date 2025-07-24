@@ -1,9 +1,38 @@
+import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
   return (
-    <div className="text-center p-10">
-      <h1 className="text-3xl font-bold">Gro</h1>
-      <p className="mt-4">App Gro</p>
+    <div
+      className="bg-cover bg-center h-screen flex flex-col items-center text-center"
+      style={{ backgroundImage: "url('/bg-landing.png')" }}
+    >
+      <p className="text-9xl leading-[0] mt-30 text-primary-sea-green">“</p>
+      <h1 className="text-5xl leading-tight font-bold">
+        Discover what grows
+        <br />
+        where you are.
+      </h1>
+      <p className="text-2xl leading-snug mt-0">
+        Grounded decisions begin with{" "}
+        <span className="font-semibold italic text-primary-sea-green">
+          Grō.
+        </span>
+      </p>
+      <button className="mt-5 text-l px-3 py-2 bg-primary-sea-green text-bold text-white rounded-lg flex items-center gap-2 hover:bg-gray-800 transition">
+        Begin discovering{" "}
+        <svg
+          width="20"
+          height="18"
+          viewBox="0 0 28 25"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M23.9099 5.87866H19.8529V3.85017C19.8529 2.95352 19.4968 2.0936 18.8627 1.45958C18.2287 0.825552 17.3688 0.46936 16.4721 0.46936H12.4152C11.5185 0.46936 10.6586 0.825552 10.0246 1.45958C9.39054 2.0936 9.03435 2.95352 9.03435 3.85017V5.87866H4.97738C3.90141 5.87866 2.8695 6.30609 2.10867 7.06692C1.34784 7.82775 0.92041 8.85965 0.92041 9.93563V20.7542C0.92041 21.8302 1.34784 22.8621 2.10867 23.6229C2.8695 24.3838 3.90141 24.8112 4.97738 24.8112H23.9099C24.9859 24.8112 26.0178 24.3838 26.7786 23.6229C27.5395 22.8621 27.9669 21.8302 27.9669 20.7542V9.93563C27.9669 8.85965 27.5395 7.82775 26.7786 7.06692C26.0178 6.30609 24.9859 5.87866 23.9099 5.87866ZM11.739 3.85017C11.739 3.67084 11.8102 3.49886 11.937 3.37205C12.0638 3.24525 12.2358 3.17401 12.4152 3.17401H16.4721C16.6515 3.17401 16.8234 3.24525 16.9503 3.37205C17.0771 3.49886 17.1483 3.67084 17.1483 3.85017V5.87866H11.739V3.85017ZM14.4436 20.0781C13.5075 20.0781 12.5924 19.8005 11.8141 19.2804C11.0357 18.7603 10.429 18.0211 10.0708 17.1562C9.71256 16.2913 9.61883 15.3397 9.80146 14.4215C9.98409 13.5034 10.4349 12.66 11.0968 11.9981C11.7588 11.3362 12.6021 10.8854 13.5203 10.7027C14.4384 10.5201 15.3901 10.6138 16.2549 10.9721C17.1198 11.3303 17.859 11.937 18.3791 12.7153C18.8992 13.4937 19.1768 14.4088 19.1768 15.3449C19.1768 16.6002 18.6781 17.8041 17.7905 18.6918C16.9028 19.5794 15.699 20.0781 14.4436 20.0781V20.0781Z"
+            fill="#FAFAFF"
+          />
+        </svg>
+      </button>
     </div>
   );
 }

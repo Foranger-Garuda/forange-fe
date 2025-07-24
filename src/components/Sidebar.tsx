@@ -15,7 +15,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
-  const [isClosed, setIsClosed] = useState(false);
+  const [isClosed, setIsClosed] = useState(true);
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<string>(""); // Track selected menu
@@ -31,9 +31,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
     setSelectedMenu(menu);
   };
 
+  const handleSettingsClick = () => {
+    setIsSettingsOpen((prev) => !prev);
+    setSelectedMenu("settings");
+  }
+
   return (
     <nav
-      className={`bg-[#2F4B40] text-white fixed top-4 left-4 h-[calc(100vh-2rem)] rounded-xl transition-all duration-300 flex flex-col ${
+      className={`bg-primary-brunswick-green text-white fixed top-4 left-4 h-[calc(100vh-2rem)] rounded-xl transition-all duration-300 flex flex-col ${
         isClosed ? "w-16 px-2" : "w-64 px-4"
       }`}
     >
@@ -138,7 +143,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
                     className={`py-1 px-2 rounded cursor-pointer ${
                       selectedMenu === submenuKey
                         ? "bg-[#E4C77B] text-black"
-                        : "hover:bg-[#E4C77B] hover:text-black"
+                        : "hover:bg-[#3D6652] hover:text-white"
                     }`}
                   >
                     {item}
@@ -152,15 +157,19 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
 
       {/* Footer */}
       <div className="mt-auto mb-4 pt-4 border-t border-[#3D6652]">
-        <div
-          onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-          className={`flex items-center gap-2 py-2 px-3 hover:bg-[#3D6652] rounded ${
+        <Button
+          onClick={() => handleSettingsClick()}
+          className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
+              selectedMenu === "settings"
+                ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
+                : "bg-transparent hover:bg-[#3D6652]"
+            } ${
             isClosed ? "justify-center" : ""
           }`}
         >
           <FiSettings />
           {!isClosed && <span>Settings</span>}
-        </div>
+        </Button>
 
         {/* Logout Button */}
         {!isClosed && (
