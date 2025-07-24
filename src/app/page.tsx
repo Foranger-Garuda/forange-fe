@@ -1,30 +1,24 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import Loading  from "@/components/Loading";
-import { useState } from "react";
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleDiscoverClick = () => {
-    setIsLoading(true);
-    // Simulate a delay for demonstration purposes
-    setTimeout(() => {
-      setIsLoading(false);
-      // You can redirect to another page or perform other actions here
-    }, 2000);
-  };
-
-  const { token } = useAuth();
   const router = useRouter();
+  const { token } = useAuth();
 
   useEffect(() => {
     if (!token) {
       router.push("/login");
     }
   }, [token, router]);
+
+  const handleDiscoverClick = () => {
+    setIsLoading(true);
+    router.push("/upload");
+  };
 
   return (
     <div

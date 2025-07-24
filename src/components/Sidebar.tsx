@@ -31,8 +31,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
     });
   };
 
-  const handleMenuClick = (menu: string) => {
+  const handleMenuClick = (menu: string, link: string) => {
     setSelectedMenu(menu);
+    router.push(link);
   };
 
   const handleSettingsClick = () => {
@@ -80,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
       <ul className="flex flex-col space-y-1 text-sm">
         <li className="w-full">
           <Button
-            onClick={() => handleMenuClick("home")}
+            onClick={() => handleMenuClick("home", "/")}
             className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
               selectedMenu === "home"
                 ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
@@ -93,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
         </li>
         <li className="w-full">
           <Button
-            onClick={() => handleMenuClick("user")}
+            onClick={() => handleMenuClick("user", "/user")}
             className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
               selectedMenu === "user"
                 ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
@@ -107,7 +108,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
 
         <li className="w-full">
           <Button
-            onClick={() => handleMenuClick("clipboard")}
+            onClick={() => handleMenuClick("clipboard", "/clipboard")}
             className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
               selectedMenu === "clipboard"
                 ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
@@ -148,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
                 return (
                   <li
                     key={i}
-                    onClick={() => handleMenuClick(submenuKey)}
+                    onClick={() => handleMenuClick(submenuKey, `/chart/${i}`)}
                     className={`py-1 px-2 rounded cursor-pointer ${
                       selectedMenu === submenuKey
                         ? "bg-[#E4C77B] text-black"
