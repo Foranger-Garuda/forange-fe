@@ -1,6 +1,18 @@
-import { Button } from "@/components/ui/button";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 
 export default function HomePage() {
+  const { token } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+    }
+  }, [token, router]);
+
   return (
     <div
       className="bg-cover bg-center h-screen flex flex-col items-center text-center"
