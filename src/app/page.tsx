@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Loading from "@/components/Loading";
 
 export default function HomePage() {
   return (
@@ -6,6 +7,7 @@ export default function HomePage() {
       className="bg-cover bg-center h-screen flex flex-col items-center text-center"
       style={{ backgroundImage: "url('/bg-landing.png')" }}
     >
+      <Loading />
       <p className="text-9xl leading-[0] mt-30 text-primary-sea-green">“</p>
       <h1 className="text-5xl leading-tight font-bold">
         Discover what grows
