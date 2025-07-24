@@ -9,6 +9,8 @@ import {
   HiOutlineChartBar,
 } from "react-icons/hi";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
 
 interface SidebarProps {
   onStateChange: (isClosed: boolean) => void;
@@ -19,6 +21,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<string>(""); // Track selected menu
+  const { user, logout } = useAuth();
+  const router = useRouter();
 
   const toggleSidebar = () => {
     setIsClosed((prev) => {
@@ -35,6 +39,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
     setIsSettingsOpen((prev) => !prev);
     setSelectedMenu("settings");
   }
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   return (
     <nav
@@ -172,19 +181,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
         </Button>
 
         {/* Logout Button */}
-        {!isClosed && (
+        {user && (
           <button
-            className={`bg-white text-red-600 font-semibold rounded-md py-2 mt-4 w-full flex items-center justify-center gap-2 ${
-              isClosed ? "justify-center" : ""
-            }`}
+            onClick={handleLogout}
+            className="w-full mt-4 p-2 bg-red-600 text-white rounded hover:bg-red-700 transition flex items-center justify-center gap-2"
           >
             <FaSignOutAlt />
-            Logout
-          </button>
-        )}
-        {isClosed && (
-          <button className="bg-white text-red-600 rounded-md p-2 mt-4 flex items-center justify-center w-full">
-            <FaSignOutAlt />
+            {!isClosed && "Logout"}
           </button>
         )}
       </div>
