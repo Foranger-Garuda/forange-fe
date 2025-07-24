@@ -39,6 +39,13 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-primary-night: var(--primary-night);
+  --color-primary-brunswick-green: var(--primary-brunswick-green);
+  --color-primary-sea-green: var(--primary-sea-green);  
+  --color-secondary-ecru: var(--secondary-ecru);
+  --color-secondary-ghost-white: var(--secondary-ghost-white);
+  --color-secondary-state-blue: var(--secondary-state-blue);
+  --color-secondary-state-red: var(--secondary-state-red);
 }
 
 :root {
@@ -74,6 +81,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --primary-night: oklch(0.1973 0.0087 240.37);
+  --primary-brunswick-green: oklch(0.3722 0.0401 160.1);
+  --primary-sea-green: oklch(0.531 0.1282 155.23);
+  --secondary-ecru: oklch(0.8387 0.088 84.43);
+  --secondary-ghost-white: oklch(0.9865 0.0066 286.28);
+  --secondary-state-blue: oklch(0.6694 0.1321 236.34);
+  --secondary-state-red: oklch(0.6534 0.1835 23.68);
 }
 
 .dark {
