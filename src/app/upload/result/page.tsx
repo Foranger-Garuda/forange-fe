@@ -338,8 +338,3 @@ export default function ResultPage() {
     </ProtectedRoute>
   );
 }
-
-// Force SSR to prevent static export errors
-export const getServerSideProps = async () => {
-  return { props: {} };
-};
