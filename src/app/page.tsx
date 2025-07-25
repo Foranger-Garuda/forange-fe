@@ -29,13 +29,13 @@ export default function HomePage() {
         <Loading />
       ) : (
         <>
-          <p className="text-9xl leading-[0] mt-30 text-primary-sea-green">“</p>
-          <h1 className="text-5xl leading-tight font-bold">
+          <p className="lg:text-9xl leading-[0] mt-30 text-primary-sea-green text-6xl">“</p>
+          <h1 className="lg:text-5xl leading-tight font-bold text-3xl">
             Discover what grows
             <br />
             where you are.
           </h1>
-          <p className="text-2xl leading-snug mt-0">
+          <p className="lg:text-2xl leading-snug lg:mt-0 mt-5 text-sm">
             Grounded decisions begin with{" "}
             <span className="font-semibold italic text-primary-sea-green">
               Grō.
@@ -43,7 +43,7 @@ export default function HomePage() {
           </p>
           <button
             onClick={handleDiscoverClick}
-            className="mt-5 text-l px-3 py-2 bg-primary-sea-green text-bold text-white rounded-lg flex items-center gap-2 hover:bg-gray-800 transition"
+            className="mt-5 lg:text-l text-sm px-3 py-2 bg-primary-sea-green text-bold text-white rounded-lg flex items-center gap-2 hover:bg-gray-800 transition shadow-lg"
           >
             Begin discovering{" "}
             <svg

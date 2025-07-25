@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
     <div>
       <button
         onClick={toggleSidebar}
-        className={`sm:hidden fixed top-4 left-4 z-50 bg-[#1F2A24] lg:hidden text-white p-1 rounded-md border-2 border-[#2D2F39] ${!isClosed ? "hidden" : "block"}`}
+        className={`fixed top-4 left-4 z-50 bg-[#1F2A24] lg:hidden text-white p-1 rounded-md border-2 border-[#2D2F39] ${!isClosed ? "hidden" : "block"}`}
       >
         <FaChevronLeft className="rotate-180"
         />
