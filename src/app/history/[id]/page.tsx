@@ -108,7 +108,11 @@ export default function HistoryDetailPage() {
             <div className="rounded-xl p-6 relative h-full flex items-center justify-center">
               {soil_photo && soil_photo.photo_url ? (
                 <img
-                  src={soil_photo.photo_url}
+                  src={
+                    process.env.NEXT_PUBLIC_API_BASE_URL
+                      ? process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "") + soil_photo.photo_url
+                      : soil_photo.photo_url
+                  }
                   alt={soil_photo.photo_filename || "Soil Photo"}
                   className="rounded-xl object-cover max-h-80 max-w-full"
                 />

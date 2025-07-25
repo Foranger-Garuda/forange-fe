@@ -124,7 +124,11 @@ export default function CropResultPage() {
               <h3 className="text-lg font-semibold text-center mb-2">Soil Sample</h3>
               <div className="flex justify-center">
                 <img
-                  src={`http://localhost:5000${result.soil_photo.url}`}
+                  src={
+                    process.env.NEXT_PUBLIC_API_BASE_URL
+                      ? process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "") + result.soil_photo.url
+                      : result.soil_photo.url
+                  }
                   alt="Soil sample"
                   className="rounded-xl object-cover max-w-xs max-h-48 border-2 border-gray-200 shadow-md"
                 />
