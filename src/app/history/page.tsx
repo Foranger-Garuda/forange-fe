@@ -1,39 +1,81 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/utils";
+import Loading from "@/components/Loading";
+import { useRouter } from "next/navigation";
+import ProtectedRoute from "@/lib/ProtectedRoute";
 
-interface CropRecommendation {
-  id: string;
-  crop_name: string;
-  crop_category: string;
-  suitability_level: string;
-  suitability_score: number;
-  best_planting_date?: string;
-  // Add more fields as needed
+interface EnrichedRecommendation {
+  recommendation: {
+    id: string;
+    crop_name: string;
+    crop_category: string;
+    suitability_level: string;
+    suitability_score: number;
+    best_planting_date?: string;
+    // ...other fields
+  };
+  prediction: {
+    id: string;
+    weather_warnings?: string;
+    seasonal_advice?: string;
+    best_planting_date?: string;
+    expected_harvest_date?: string;
+    created_at?: string; // Added for date
+    city?: string; // Added for location
+    province?: string; // Added for location
+    // ...other fields
+  } | null;
+  soil_analysis: {
+    id: string;
+    classified_soil_type?: string;
+    soil_color?: string;
+    soil_texture?: string;
+    soil_drainage?: string;
+    soil_location_type?: string;
+    soil_fertility?: string;
+    soil_moisture?: string;
+    created_at?: string; // Added for date
+    city?: string; // Added for location
+    province?: string; // Added for location
+    // ...other fields
+  } | null;
 }
 
 interface CropRecommendationCardProps {
-  recommendation: CropRecommendation;
+  enriched: EnrichedRecommendation;
   onClick: () => void;
 }
 
-const CropRecommendationCard: React.FC<CropRecommendationCardProps> = ({ recommendation, onClick }) => (
-  <div
-    className="bg-white rounded-2xl shadow-md p-6 m-2 cursor-pointer border-2 border-green-600 hover:scale-105 transition-transform min-w-[250px] max-w-xs flex flex-col items-center"
-    onClick={onClick}
-  >
-    <div className="text-lg font-bold text-center mb-2">{recommendation.crop_name}</div>
-    <div className="text-gray-700 text-center mb-1">{recommendation.crop_category}</div>
-    <div className="text-sm text-center mb-2">Suitability: {recommendation.suitability_level} ({recommendation.suitability_score}%)</div>
-    {/* Add more summary info as needed */}
-    <div className="w-full h-1 bg-green-600 rounded my-2" />
-    <div className="text-xs text-gray-500">ID: {recommendation.id}</div>
-  </div>
-);
+const CropRecommendationCard: React.FC<CropRecommendationCardProps> = ({ enriched, onClick }) => {
+  const { recommendation, prediction, soil_analysis } = enriched;
+  // Prefer soil_analysis.created_at, fallback to prediction.created_at
+  const date = soil_analysis?.created_at || prediction?.created_at || null;
+  // Prefer city/province from soil_analysis
+  const location = soil_analysis ? [soil_analysis.city, soil_analysis.province].filter(Boolean).join(", ") : "-";
+  return (
+    <div
+      className="bg-white rounded-2xl shadow-md p-6 m-2 cursor-pointer border-2 border-green-600 hover:scale-105 transition-transform w-80 flex flex-col items-center"
+      onClick={onClick}
+    >
+      <div className="text-lg font-bold text-center mb-2">{recommendation.crop_name}</div>
+      <div className="text-gray-700 text-center mb-1">{recommendation.crop_category}</div>
+      <div className="text-sm text-center mb-2 font-semibold">Suitability Score: {recommendation.suitability_score ?? '-'}%</div>
+      {/* Location and Date */}
+      {date && <div className="text-xs text-gray-600 mb-2">{new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>}
+      <div className="w-full h-1 bg-green-600 rounded my-2" />
+      {/* Soil Type */}
+      {soil_analysis && (
+        <div className="text-xs text-gray-700 mb-1">Soil Type: <span className="font-semibold">{soil_analysis.classified_soil_type || '-'}</span></div>
+      )}
+    </div>
+  );
+};
 
 const HistoryPage: React.FC = () => {
-  const [recommendations, setRecommendations] = useState<CropRecommendation[]>([]);
+  const [recommendations, setRecommendations] = useState<EnrichedRecommendation[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     apiFetch("/user/crop-recommendations")
@@ -50,30 +92,33 @@ const HistoryPage: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <Loading />;
   }
 
   return (
-    <div className="min-h-screen bg-green-900 py-10 px-4">
-      <h1 className="text-3xl font-bold text-center text-white mb-8">Revisit your previous discoveries!</h1>
-      <div className="flex flex-wrap justify-center gap-6">
-        {Array.isArray(recommendations) && recommendations.length === 0 ? (
-          <div className="text-white text-center">No historical crop recommendations found.</div>
-        ) : (
-          Array.isArray(recommendations) &&
-            recommendations.map((rec) => (
-              <CropRecommendationCard
-                key={rec.id}
-                recommendation={rec}
-                onClick={() => {
-                  // TODO: Implement navigation to detail page
-                  alert(`Go to detail for ID: ${rec.id}`);
-                }}
-              />
-            ))
-        )}
+    <ProtectedRoute>
+      <div className=" flex min-h-screen bg-green-900 py-10 px-4 items-center justify-center">
+        <div className="min-h-screen items-center justify-center">
+            <h1 className="text-3xl font-bold text-center text-white mb-8">Revisit your previous discoveries!</h1>
+            <div className="flex flex-wrap justify-center gap-6">
+                {Array.isArray(recommendations) && recommendations.length === 0 ? (
+                <div className="text-white text-center">No historical crop recommendations found.</div>
+                ) : (
+                Array.isArray(recommendations) &&
+                    recommendations.map((rec, idx) => (
+                    <CropRecommendationCard
+                        key={rec.recommendation.id + idx}
+                        enriched={rec}
+                        onClick={() => {
+                          router.push(`/history/${rec.recommendation.id}`);
+                        }}
+                    />
+                    ))
+                )}
+            </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 

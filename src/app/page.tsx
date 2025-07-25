@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import ProtectedRoute from "@/lib/ProtectedRoute";
 import Loading from "@/components/Loading";
 import {
   Accordion,

@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
         {/* Header */}
         <div className="flex items-center justify-between mt-4 mb-4 border-b border-[#3D6652] pb-4">
           <div className="flex flex-row gap-1 w-full">
-            <img src="/avatar.png" alt="Logo" className="w-10 h-10" />
+            <img src="/Avatar.png" alt="Logo" className="w-10 h-10" />
             {!isClosed && (
               <div className="flex flex-col gap-1 w-full items-center justify-center">
                 <span className="font-semibold text-sm">Carmelo</span>
@@ -115,15 +115,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
         </li>
         <li className="w-full">
           <Button
-            onClick={() => handleMenuClick("user", "/user")}
+            onClick={() => handleMenuClick("history", "/history")}
             className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
               selectedMenu === "user"
                 ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
                 : "bg-transparent hover:bg-[#3D6652]"
             } ${isClosed ? "justify-center" : ""}`}
           >
-            <HiOutlineUser />
-            {!isClosed && <span>User</span>}
+            <HiOutlineChartBar />
+            {!isClosed && <span>Past Recommendations</span>}
           </Button>
         </li>
 
