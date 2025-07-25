@@ -45,10 +45,6 @@ export default function RegisterPage() {
           <img src="/gro.png" alt="logo gro" className="w-40 lg:w-100 h-auto" />
         </div>
         <div className="absolute bottom-0 left-0 p-4">
-          <p className="text-base">
-            &quot;Viralkan perubahan, wujudkan Lahan Damai.&quot;
-          </p>
-          <p className="text-sm opacity-80">Muhammad Iqbal</p>
         </div>
       </div>
 
@@ -106,17 +102,6 @@ export default function RegisterPage() {
               Sign Up
             </Button>
           </form>
-          <p className="text-xs text-gray-400 mt-4">
-            By clicking continue, you agree to our{" "}
-            <Link href="#" className="underline text-gray-400">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link href="#" className="underline text-gray-400">
-              Privacy Policy
-            </Link>
-            .
-          </p>
         </div>
       </div>
     </div>
