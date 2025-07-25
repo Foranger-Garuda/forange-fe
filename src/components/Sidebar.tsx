@@ -84,35 +84,48 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
           </button>
         </div>
 
-        {/* Main Menu */}
-        {!isClosed && <div className="text-xs text-gray-300 mb-2">MAIN</div>}
-        <ul className="flex flex-col space-y-1 text-sm">
-          <li className="w-full">
-            <Button
-              onClick={() => handleMenuClick("home", "/")}
-              className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
-                selectedMenu === "home"
-                  ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
-                  : "bg-transparent hover:bg-[#3D6652]"
-              } ${isClosed ? "justify-center" : ""}`}
-            >
-              <HiOutlineHome />
-              {!isClosed && <span>Home</span>}
-            </Button>
-          </li>
-          <li className="w-full">
-            <Button
-              onClick={() => handleMenuClick("user", "/user")}
-              className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
-                selectedMenu === "user"
-                  ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
-                  : "bg-transparent hover:bg-[#3D6652]"
-              } ${isClosed ? "justify-center" : ""}`}
-            >
-              <HiOutlineUser />
-              {!isClosed && <span>User</span>}
-            </Button>
-          </li>
+      {/* Main Menu */}
+      {!isClosed && <div className="text-xs text-gray-300 mb-2">MAIN</div>}
+      <ul className="flex flex-col space-y-1 text-sm">
+        <li className="w-full">
+          <Button
+            onClick={() => handleMenuClick("home", "/")}
+            className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
+              selectedMenu === "home"
+                ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
+                : "bg-transparent hover:bg-[#3D6652]"
+            } ${isClosed ? "justify-center" : ""}`}
+          >
+            <HiOutlineHome />
+            {!isClosed && <span>Home</span>}
+          </Button>
+        </li>
+        <li className="w-full">
+          <Button
+            onClick={() => handleMenuClick("analyze-soil", "/upload")}
+            className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
+              selectedMenu === "analyze-soil"
+                ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
+                : "bg-transparent hover:bg-[#3D6652]"
+            } ${isClosed ? "justify-center" : ""}`}
+          >
+            <HiOutlineClipboardList />
+            {!isClosed && <span>Analyze Soil</span>}
+          </Button>
+        </li>
+        <li className="w-full">
+          <Button
+            onClick={() => handleMenuClick("user", "/user")}
+            className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
+              selectedMenu === "user"
+                ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
+                : "bg-transparent hover:bg-[#3D6652]"
+            } ${isClosed ? "justify-center" : ""}`}
+          >
+            <HiOutlineUser />
+            {!isClosed && <span>User</span>}
+          </Button>
+        </li>
 
           <li className="w-full">
             <Button

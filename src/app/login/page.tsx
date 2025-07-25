@@ -49,8 +49,10 @@ export default function LoginPage() {
           <img src="/gro.png" alt="logo gro" className="w-40 lg:w-100 h-auto" />
         </div>
         <div className="hidden lg:block absolute bottom-0 left-0 p-4 text-sm lg:text-base">
-          <p>"Viralkan perubahan, wujudkan Lahan Damai."</p>
-          <p className="opacity-80">Muhammad Iqbal</p>
+          <p className="text-base">
+            "Viralkan perubahan, wujudkan Lahan Damai."
+          </p>
+          <p className="text-sm opacity-80">Muhammad Iqbal</p>
         </div>
       </div>
 
