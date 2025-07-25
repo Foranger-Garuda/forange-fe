@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -79,8 +79,12 @@ export default function UploadPage() {
         sessionStorage.getItem("uploadResult")
       );
       router.push("/upload/result");
-    } catch (err: any) {
-      setError(err.message || "Upload failed");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Upload failed");
+      } else {
+        setError("Upload failed");
+      }
     } finally {
       setLoading(false);
     }
