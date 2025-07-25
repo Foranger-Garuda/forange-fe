@@ -105,7 +105,9 @@ const HistoryPage: React.FC = () => {
                 <div className="text-white text-center">No historical crop recommendations found.</div>
                 ) : (
                 Array.isArray(recommendations) &&
-                    recommendations.map((rec, idx) => (
+                    recommendations
+                      .filter(rec => rec && rec.recommendation && rec.recommendation.id)
+                      .map((rec, idx) => (
                     <CropRecommendationCard
                         key={rec.recommendation.id + idx}
                         enriched={rec}
