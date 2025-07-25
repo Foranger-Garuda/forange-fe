@@ -42,12 +42,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          {showSidebar && <Sidebar onStateChange={setSidebarClosed} />}
-          <main
-            className={`flex-grow transition-all duration-300 overflow-y-auto h-full min-h-screen `}
-          >
-            {children}
-          </main>
+        {showSidebar && <Sidebar onStateChange={setSidebarClosed} />}
+        <main
+          className={`flex-grow transition-all duration-300 overflow-y-auto h-full min-h-screen `}
+        >
+          {children}
+        </main>
         </AuthProvider>
       </body>
     </html>

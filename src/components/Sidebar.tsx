@@ -94,6 +94,19 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
         </li>
         <li className="w-full">
           <Button
+            onClick={() => handleMenuClick("analyze-soil", "/upload")}
+            className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
+              selectedMenu === "analyze-soil"
+                ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
+                : "bg-transparent hover:bg-[#3D6652]"
+            } ${isClosed ? "justify-center" : ""}`}
+          >
+            <HiOutlineClipboardList />
+            {!isClosed && <span>Analyze Soil</span>}
+          </Button>
+        </li>
+        <li className="w-full">
+          <Button
             onClick={() => handleMenuClick("user", "/user")}
             className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
               selectedMenu === "user"

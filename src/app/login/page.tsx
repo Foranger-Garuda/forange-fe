@@ -50,7 +50,7 @@ export default function LoginPage() {
         </div>
         <div className="absolute bottom-0 left-0 p-4">
           <p className="text-base">
-            &quot;Viralkan perubahan, wujudkan Lahan Damai.&quot;
+            "Viralkan perubahan, wujudkan Lahan Damai."
           </p>
           <p className="text-sm opacity-80">Muhammad Iqbal</p>
         </div>

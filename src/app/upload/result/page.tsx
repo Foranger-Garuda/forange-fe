@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/utils";
+import dynamic from "next/dynamic";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 export default function ResultPage() {
   const [soilColor, setSoilColor] = useState("");
@@ -31,6 +34,12 @@ export default function ResultPage() {
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
   const router = useRouter();
+
+  // Dynamically import MapContainer and related components to avoid SSR issues
+  const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
+  const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
+  const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
+  const useMapEvents = dynamic(() => import("react-leaflet").then(mod => mod.useMapEvents), { ssr: false });
 
   useEffect(() => {
     const stored = sessionStorage.getItem("uploadResult");
@@ -87,6 +96,36 @@ export default function ResultPage() {
     }
   }, []);
 
+  // Custom component for picking location on the map
+  function LocationPicker({ lat, lon, setLat, setLon }: { lat: number | null, lon: number | null, setLat: (v: number) => void, setLon: (v: number) => void }) {
+    // @ts-expect-error
+    useMapEvents({
+      click(e) {
+        setLat(e.latlng.lat);
+        setLon(e.latlng.lng);
+      },
+    });
+    return lat && lon ? (
+      <Marker
+        position={[lat, lon]}
+        draggable={true}
+        eventHandlers={{
+          dragend: (e: any) => {
+            const marker = e.target;
+            const position = marker.getLatLng();
+            setLat(position.lat);
+            setLon(position.lng);
+          }
+        }}
+        icon={L.icon({
+          iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+        })}
+      />
+    ) : null;
+  }
+
   const Dropdown = ({
     label,
     value,
@@ -139,6 +178,8 @@ export default function ResultPage() {
         body: payload,
       });
       setSubmitResult(data);
+      sessionStorage.setItem("cropResult", JSON.stringify(data));
+      window.location.href = "/upload/crop-result";
     } catch (err: any) {
       setSubmitError(err.message || "Submission failed");
     } finally {
@@ -206,6 +247,27 @@ export default function ResultPage() {
                   {locationError && (
                     <div className="text-red-500 text-center mb-2">{locationError}</div>
                   )}
+                  <div className="mb-4">
+                    <div className="text-xs text-white mb-2">Click on the map or drag the marker to set your location.</div>
+                    <label className="block text-white font-medium mb-2">Pick Location on Map</label>
+                    <div className="rounded-lg overflow-hidden border border-gray-300" style={{ height: 300 }}>
+                      <MapContainer
+                        center={[(lat ?? -6.2), (lon ?? 106.8)]}
+                        zoom={13}
+                        style={{ height: 300, width: "100%" }}
+                        scrollWheelZoom={true}
+                      >
+                        <TileLayer
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                          attribution="&copy; OpenStreetMap contributors"
+                        />
+                        <LocationPicker lat={lat} lon={lon} setLat={setLat} setLon={setLon} />
+                      </MapContainer>
+                    </div>
+                    {lat && lon && (
+                      <div className="text-xs text-white mt-2">Selected: {lat.toFixed(5)}, {lon.toFixed(5)}</div>
+                    )}
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <Dropdown
                       label="Soil Color"
