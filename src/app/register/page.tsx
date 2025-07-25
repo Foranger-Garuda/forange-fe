@@ -43,29 +43,29 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col lg:flex-row h-screen">
       {/* Left Panel */}
-      <div className="flex flex-col justify-center items-center flex-1 bg-[#138048] text-white p-10 relative">
-        <div className="text-[72px] font-bold flex items-center relative">
-          <img src="/gro.png" alt="logo gro" />
+      <div className="flex flex-col justify-center items-center basis-[10%] lg:flex-1 bg-[#138048] text-white p-10 relative">
+        <div className="text-[48px] lg:text-[72px] font-bold flex items-center relative">
+          <img src="/gro.png" alt="logo gro" className="w-40 lg:w-100 h-auto" />
         </div>
-        <div className="absolute bottom-0 left-0 p-4">
-          <p className="text-base">
-            "Viralkan perubahan, wujudkan Lahan Damai."
-          </p>
-          <p className="text-sm opacity-80">Muhammad Iqbal</p>
+
+        {/* Sembunyikan di mobile, tampilkan di desktop */}
+        <div className="hidden lg:block absolute bottom-0 left-0 p-4 text-sm lg:text-base">
+          <p>"Viralkan perubahan, wujudkan Lahan Damai."</p>
+          <p className="opacity-80">Muhammad Iqbal</p>
         </div>
       </div>
 
       {/* Right Panel */}
-      <div className="flex flex-col justify-center flex-1 bg-[#121212] text-white p-10 relative">
+      <div className="flex flex-col justify-center basis-[90%] lg:flex-1 bg-[#121212] text-white p-10 relative">
         <Link
           href="/login"
           className="absolute top-5 right-8 text-sm underline"
         >
           Login
         </Link>
-        <div className="max-w-sm w-full mx-auto text-center">
+        <div className="w-full max-w-md mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold mb-2">Create an account</h2>
           <p className="text-sm mb-6">
             Enter your details below to create your account
@@ -103,9 +103,7 @@ export default function RegisterPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full p-3 mb-4 rounded-md border border-gray-700 bg-[#1e1e1e] text-white"
             />
-            {error && (
-              <div className="text-red-500 text-xs mb-2">{error}</div>
-            )}
+            {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
             {success && (
               <div className="text-green-500 text-xs mb-2">{success}</div>
             )}
