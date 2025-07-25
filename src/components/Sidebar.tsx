@@ -7,6 +7,7 @@ import {
   HiOutlineUser,
   HiOutlineClipboardList,
   HiOutlineChartBar,
+  HiOutlineBookOpen,
 } from "react-icons/hi";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
@@ -117,13 +118,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
           <Button
             onClick={() => handleMenuClick("history", "/history")}
             className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
-              selectedMenu === "user"
+              selectedMenu === "history"
                 ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
                 : "bg-transparent hover:bg-[#3D6652]"
             } ${isClosed ? "justify-center" : ""}`}
           >
-            <HiOutlineChartBar />
-            {!isClosed && <span>Past Recommendations</span>}
+            <HiOutlineBookOpen />
+            {!isClosed && <span>History</span>}
           </Button>
         </li>
 
