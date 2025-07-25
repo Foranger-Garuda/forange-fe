@@ -62,6 +62,7 @@ export default function HistoryDetailPage() {
   const [expandWeather, setExpandWeather] = useState(false);
   const [expandSoil, setExpandSoil] = useState(false);
   const router = useRouter();
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -106,7 +107,7 @@ export default function HistoryDetailPage() {
           {/* Left Panel - Photo */}
           <div className="flex-1">
             <div className="rounded-xl p-6 relative h-full flex items-center justify-center">
-              {soil_photo && soil_photo.photo_url ? (
+              {soil_photo && soil_photo.photo_url && !imageError ? (
                 <img
                   src={
                     process.env.NEXT_PUBLIC_API_BASE_URL
@@ -115,12 +116,10 @@ export default function HistoryDetailPage() {
                   }
                   alt={soil_photo.photo_filename || "Soil Photo"}
                   className="rounded-xl object-cover max-h-80 max-w-full"
+                  onError={() => setImageError(true)}
                 />
               ) : (
-                <div
-                  className="absolute inset-0 bg-contain bg-center bg-no-repeat rounded-xl"
-                  style={{ backgroundImage: "url('/result-example.png')" }}
-                ></div>
+                <div className="text-gray-500 text-center py-8">No image</div>
               )}
             </div>
           </div>

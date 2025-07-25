@@ -93,6 +93,7 @@ export default function CropResultPage() {
   const [result, setResult] = useState<CropResult | null>(null);
   const [expandWeather, setExpandWeather] = useState(false);
   const [expandSoil, setExpandSoil] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("cropResult");
@@ -125,15 +126,20 @@ export default function CropResultPage() {
             <div className="w-full mb-4">
               <h3 className="text-lg font-semibold text-center mb-2">Soil Sample</h3>
               <div className="flex justify-center">
-                <img
-                  src={
-                    process.env.NEXT_PUBLIC_API_BASE_URL
-                      ? process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "") + result.soil_photo.url
-                      : result.soil_photo.url
-                  }
-                  alt="Soil sample"
-                  className="rounded-xl object-cover max-w-xs max-h-48 border-2 border-gray-200 shadow-md"
-                />
+                {!imageError ? (
+                  <img
+                    src={
+                      process.env.NEXT_PUBLIC_API_BASE_URL
+                        ? process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "") + result.soil_photo.url
+                        : result.soil_photo.url
+                    }
+                    alt="Soil sample"
+                    className="rounded-xl object-cover max-w-xs max-h-48 border-2 border-gray-200 shadow-md"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <div className="text-gray-500 text-center py-8">No image</div>
+                )}
               </div>
             </div>
           )}
