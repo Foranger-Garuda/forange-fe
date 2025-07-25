@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth-context";
+import { apiFetch } from "@/lib/utils";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -24,20 +25,14 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/authentication/login", {
+      const data = await apiFetch("/authentication/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
-      if (res.status === 200) {
-        authLogin(data.user, data.access_token);
-        router.push("/");
-      } else {
-        setError(data.error || data.message || "Login failed");
-      }
+      authLogin(data.user, data.access_token);
+      router.push("/");
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError((err as Error).message || "Login failed");
     }
   };
 
@@ -50,7 +45,7 @@ export default function LoginPage() {
         </div>
         <div className="hidden lg:block absolute bottom-0 left-0 p-4 text-sm lg:text-base">
           <p className="text-base">
-            "Viralkan perubahan, wujudkan Lahan Damai."
+            &quot;Viralkan perubahan, wujudkan Lahan Damai.&quot;
           </p>
           <p className="text-sm opacity-80">Muhammad Iqbal</p>
         </div>

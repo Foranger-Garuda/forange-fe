@@ -15,6 +15,7 @@ import { apiFetch } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import type { LatLngExpression } from "leaflet";
 
 export default function ResultPage() {
   const [soilColor, setSoilColor] = useState("");
@@ -23,12 +24,12 @@ export default function ResultPage() {
   const [soilLocationType, setSoilLocationType] = useState("");
   const [soilFertility, setSoilFertility] = useState("");
   const [soilMoisture, setSoilMoisture] = useState("");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{ characteristics?: Record<string, string>; photo_url?: string } | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const [submitResult, setSubmitResult] = useState<any>(null);
+  const [submitResult, setSubmitResult] = useState<{ [key: string]: unknown } | null>(null);
   const [lat, setLat] = useState<number | null>(null);
   const [lon, setLon] = useState<number | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -39,7 +40,6 @@ export default function ResultPage() {
   const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
   const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
   const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
-  const useMapEvents = dynamic(() => import("react-leaflet").then(mod => mod.useMapEvents), { ssr: false });
 
   useEffect(() => {
     const stored = sessionStorage.getItem("uploadResult");
@@ -98,24 +98,24 @@ export default function ResultPage() {
 
   // Custom component for picking location on the map
   function LocationPicker({ lat, lon, setLat, setLon }: { lat: number | null, lon: number | null, setLat: (v: number) => void, setLon: (v: number) => void }) {
-    // @ts-expect-error
-    useMapEvents({
-      click(e) {
+    // eslint-disable-next-line
+    require("react-leaflet").useMapEvents({
+      click(e: { latlng: { lat: number; lng: number } }) {
         setLat(e.latlng.lat);
         setLon(e.latlng.lng);
       },
     });
     return lat && lon ? (
       <Marker
-        position={[lat, lon]}
-        draggable={true}
+        position={[lat, lon] as LatLngExpression}
+        // draggable is not a valid prop in react-leaflet v4+, use eventHandlers instead
         eventHandlers={{
-          dragend: (e: any) => {
-            const marker = e.target;
+          dragend: (e: L.LeafletEvent) => {
+            const marker = e.target as L.Marker;
             const position = marker.getLatLng();
             setLat(position.lat);
             setLon(position.lng);
-          }
+          },
         }}
         icon={L.icon({
           iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -154,13 +154,13 @@ export default function ResultPage() {
     </div>
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitLoading(true);
     setSubmitError("");
     setSubmitResult(null);
     try {
-      const payload: any = {
+      const payload = {
         classified_soil_type: result?.characteristics?.classified_soil_type || "",
         soil_color: soilColor,
         soil_texture: soilTexture,
@@ -168,20 +168,22 @@ export default function ResultPage() {
         soil_location_type: soilLocationType,
         soil_fertility: soilFertility,
         soil_moisture: soilMoisture,
+        ...(lat !== null && lon !== null ? { lat, lon } : {}),
       };
-      if (lat !== null && lon !== null) {
-        payload.lat = lat;
-        payload.lon = lon;
-      }
       const data = await apiFetch("/soil/submit", {
         method: "POST",
-        body: payload,
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
       });
       setSubmitResult(data);
       sessionStorage.setItem("cropResult", JSON.stringify(data));
       window.location.href = "/upload/crop-result";
-    } catch (err: any) {
-      setSubmitError(err.message || "Submission failed");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setSubmitError(err.message);
+      } else {
+        setSubmitError("Submission failed");
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -252,13 +254,14 @@ export default function ResultPage() {
                     <label className="block text-white font-medium mb-2">Pick Location on Map</label>
                     <div className="rounded-lg overflow-hidden border border-gray-300" style={{ height: 300 }}>
                       <MapContainer
-                        center={[(lat ?? -6.2), (lon ?? 106.8)]}
+                        center={[(lat ?? -6.2), (lon ?? 106.8)] as LatLngExpression}
                         zoom={13}
                         style={{ height: 300, width: "100%" }}
                         scrollWheelZoom={true}
                       >
                         <TileLayer
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                          // Remove invalid 'attribution' prop if not supported, or use correct prop if needed
                           attribution="&copy; OpenStreetMap contributors"
                         />
                         <LocationPicker lat={lat} lon={lon} setLat={setLat} setLon={setLon} />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { apiFetch } from "@/lib/utils";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -25,20 +26,14 @@ export default function RegisterPage() {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch("http://localhost:5000/authentication/register", {
+      const data = await apiFetch("/authentication/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, full_name: fullName }),
       });
-      const data = await res.json();
-      if (res.status === 201) {
-        setSuccess("Registration successful! Redirecting to login...");
-        setTimeout(() => router.push("/login"), 1500);
-      } else {
-        setError(data.error || data.message || "Registration failed");
-      }
+      setSuccess('Registration successful! Redirecting to login...');
+      setTimeout(() => router.push('/login'), 1500);
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError((err as Error).message || "Registration failed");
     }
   };
 
@@ -49,11 +44,11 @@ export default function RegisterPage() {
         <div className="text-[48px] lg:text-[72px] font-bold flex items-center relative">
           <img src="/gro.png" alt="logo gro" className="w-40 lg:w-100 h-auto" />
         </div>
-
-        {/* Sembunyikan di mobile, tampilkan di desktop */}
-        <div className="hidden lg:block absolute bottom-0 left-0 p-4 text-sm lg:text-base">
-          <p>"Viralkan perubahan, wujudkan Lahan Damai."</p>
-          <p className="opacity-80">Muhammad Iqbal</p>
+        <div className="absolute bottom-0 left-0 p-4">
+          <p className="text-base">
+            &quot;Viralkan perubahan, wujudkan Lahan Damai.&quot;
+          </p>
+          <p className="text-sm opacity-80">Muhammad Iqbal</p>
         </div>
       </div>
 
