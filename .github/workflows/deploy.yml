@@ -44,6 +44,8 @@ jobs:
         run: |
           ssh ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }} '
             cd /home/propenchill/gro-fe
-            npm ci --production
-            pm2 reload ecosystem.config.js --update-env
+            npm install --omit=dev
+            sudo npm install -g pm2 || echo "PM2 already installed"
+            npm run build
+            pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js
           '
