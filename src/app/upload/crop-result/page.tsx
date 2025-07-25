@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import ProtectedRoute from "@/lib/ProtectedRoute";
+import CropResultBackground from "@/components/CropResultBackground";
 
 interface CropRecommendation {
   best_planting_date: string;
@@ -110,7 +111,8 @@ export default function CropResultPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-200 to-white py-8">
+      <CropResultBackground />
+      <div className="min-h-screen flex flex-col items-center justify-center py-8">
         <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
           <div className="text-2xl font-bold text-center mb-4 mt-2">Here is your crop recommendation!</div>
           <div className="text-xl font-bold mb-2 text-center">{crop.crop_name}</div>

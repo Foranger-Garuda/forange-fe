@@ -135,7 +135,7 @@ export default function HomePage() {
               </AccordionTrigger>
               <AccordionContent className="px-6 pb-4 text-gray-700">
                 Most soil analyses complete within 5-15 seconds. Processing time
-                may vary based on image size and server load. You'll be
+                may vary based on image size and server load. You&apos;ll be
                 automatically redirected to the results page once analysis is
                 complete.
               </AccordionContent>

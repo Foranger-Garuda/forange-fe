@@ -1,0 +1,50 @@
+name: Deploy Next.js Frontend to Server
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Export static files (if using static export)
+        run: |
+          if [ -f next.config.js ] && grep -q 'output:.*export' next.config.*; then
+            npm run export
+          fi
+        continue-on-error: true
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.FRONTEND_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.FRONTEND_SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server via rsync
+        run: |
+          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' .next/ ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/path/to/your/frontend/.next/
+          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' public/ ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/path/to/your/frontend/public/
+          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' package.json ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/path/to/your/frontend/
+          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' next.config.ts ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/path/to/your/frontend/
+
+      # Optionally, restart your frontend service (e.g., pm2, systemctl, etc.)
+      # - name: Restart frontend service
+      #   run: |
+      #     ssh ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }} 'pm2 restart your-frontend-app' 
