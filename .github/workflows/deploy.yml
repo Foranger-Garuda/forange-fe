@@ -32,7 +32,7 @@ jobs:
 
       - name: Deploy to server via rsync
         run: |
-          # Deploy all necessary files
+          # Deploy all necessary files including ecosystem.config.js
           rsync -avz --delete \
             --exclude='.git/' \
             --exclude='node_modules/' \
@@ -44,8 +44,26 @@ jobs:
         run: |
           ssh ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }} '
             cd /home/propenchill/gro-fe
-            npm install --omit=dev
-            sudo npm install -g pm2 || echo "PM2 already installed"
+            
+            # Install all dependencies (including TypeScript)
+            npm install
+            
+            # Build the project on server
             npm run build
-            pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+            
+            # Check if PM2 is installed, install if not (without sudo in CI)
+            if ! command -v pm2 &> /dev/null; then
+              echo "PM2 not found, please install manually on server"
+              exit 1
+            fi
+            
+            # Start or reload the application
+            if pm2 describe gro-frontend > /dev/null 2>&1; then
+              pm2 reload gro-frontend --update-env
+            else
+              pm2 start ecosystem.config.js
+            fi
+            
+            # Save PM2 configuration
+            pm2 save
           '
