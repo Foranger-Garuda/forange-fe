@@ -2,6 +2,7 @@
 import React, { useState, useRef } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import { apiFetch } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -9,13 +10,16 @@ export default function UploadPage() {
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setResult(null);
     setError("");
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
+      setPreviewUrl(URL.createObjectURL(e.target.files[0]));
     }
   };
 
@@ -64,7 +68,11 @@ export default function UploadPage() {
         method: "POST",
         body: formData,
       });
+      console.log("Backend result:", data);
       setResult(data);
+      sessionStorage.setItem("uploadResult", JSON.stringify({ result: data, fileName: file.name, previewUrl }));
+      console.log("sessionStorage uploadResult:", sessionStorage.getItem("uploadResult"));
+      router.push("/upload/result");
     } catch (err: any) {
       setError(err.message || "Upload failed");
     } finally {
