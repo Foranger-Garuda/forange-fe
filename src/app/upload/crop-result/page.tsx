@@ -131,10 +131,10 @@ export default function CropResultPage() {
         )}
         
         {/* Crop Details Grid */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 mx-auto justify-items-center">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 mx-auto">
           <div className="bg-blue-50 rounded-lg p-3">
-            <h4 className="font-semibold text-blue-800 mb-1">Planting Information</h4>
-            <div className="text-sm space-y-1">
+            <h4 className="font-semibold text-blue-800 mb-1 text-base sm:text-lg">Planting Information</h4>
+            <div className="text-sm sm:text-base space-y-1">
               <div><span className="font-medium">Method:</span> {crop.planting_method}</div>
               <div><span className="font-medium">Spacing:</span> {crop.spacing_recommendation}</div>
               <div><span className="font-medium">Best Date:</span> {formatDate(crop.best_planting_date)}</div>
