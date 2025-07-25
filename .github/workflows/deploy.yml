@@ -2,7 +2,7 @@ name: Deploy Next.js Frontend to Server
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build-and-deploy:
@@ -39,10 +39,10 @@ jobs:
 
       - name: Deploy to server via rsync
         run: |
-          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' .next/ ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/path/to/your/frontend/.next/
-          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' public/ ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/path/to/your/frontend/public/
-          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' package.json ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/path/to/your/frontend/
-          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' next.config.ts ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/path/to/your/frontend/
+          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' .next/ ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/home/propenchill/gro-fe/.next/
+          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' public/ ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/home/propenchill/gro-fe/public/
+          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' package.json ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/home/propenchill/gro-fe/
+          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' next.config.ts ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/home/propenchill/gro-fe/
 
       # Optionally, restart your frontend service (e.g., pm2, systemctl, etc.)
       # - name: Restart frontend service

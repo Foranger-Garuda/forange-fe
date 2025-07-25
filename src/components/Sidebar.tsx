@@ -127,80 +127,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onStateChange }) => {
             {!isClosed && <span>History</span>}
           </Button>
         </li>
-
-          <li className="w-full">
-            <Button
-              onClick={() => handleMenuClick("clipboard", "/clipboard")}
-              className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
-                selectedMenu === "clipboard"
-                  ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
-                  : "bg-transparent hover:bg-[#3D6652]"
-              } ${isClosed ? "justify-center" : ""}`}
-            >
-              <HiOutlineClipboardList />
-              {!isClosed && <span>Clipboard</span>}
-            </Button>
-          </li>
-
-          {/* Dropdown with Submenu */}
-          <li>
-            <div
-              onClick={() => setIsSubmenuOpen(!isSubmenuOpen)}
-              className={`flex items-center justify-between py-2 px-3 rounded cursor-pointer ${
-                selectedMenu.startsWith("chart-")
-                  ? "bg-[#E4C77B] text-black"
-                  : "hover:bg-[#3D6652]"
-              } ${isClosed ? "justify-center" : ""}`}
-            >
-              <div className="flex items-center gap-2">
-                <HiOutlineChartBar />
-                {!isClosed && <span>Chart</span>}
-              </div>
-              {!isClosed && (
-                <FaChevronDown
-                  className={`transition-transform text-sm ${
-                    isSubmenuOpen ? "rotate-180" : ""
-                  }`}
-                />
-              )}
-            </div>
-            {isSubmenuOpen && !isClosed && (
-              <ul className="ml-6 mt-1 space-y-1 border-l border-[#888] pl-3">
-                {["Ipsum 1", "Ipsum 2", "Ipsum 3"].map((item, i) => {
-                  const submenuKey = `chart-${i}`;
-                  return (
-                    <li
-                      key={i}
-                      onClick={() => handleMenuClick(submenuKey, `/chart/${i}`)}
-                      className={`py-1 px-2 rounded cursor-pointer ${
-                        selectedMenu === submenuKey
-                          ? "bg-[#E4C77B] text-black"
-                          : "hover:bg-[#3D6652] hover:text-white"
-                      }`}
-                    >
-                      {item}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </li>
         </ul>
 
         {/* Footer */}
         <div className="mt-auto mb-4 pt-4 border-t border-[#3D6652]">
-          <Button
-            onClick={() => handleSettingsClick()}
-            className={`flex w-full items-center justify-baseline shadow-none gap-2 py-2 px-3 rounded ${
-              selectedMenu === "settings"
-                ? "bg-[#E4C77B] text-black hover:bg-[#E4C77B]"
-                : "bg-transparent hover:bg-[#3D6652]"
-            } ${isClosed ? "justify-center" : ""}`}
-          >
-            <FiSettings />
-            {!isClosed && <span>Settings</span>}
-          </Button>
-
           {/* Logout Button */}
           {user && (
             <button

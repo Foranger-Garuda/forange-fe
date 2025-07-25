@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,11 +14,14 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/utils";
-import dynamic from "next/dynamic";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import type { LatLngExpression } from "leaflet";
+import nextDynamic from "next/dynamic";
 import ProtectedRoute from "@/lib/ProtectedRoute";
+
+// Dynamically import all map-related components and Leaflet to avoid SSR issues
+const MapComponent = nextDynamic(() => import('./MapComponent'), { 
+  ssr: false,
+  loading: () => <div className="h-[300px] bg-gray-200 rounded-lg flex items-center justify-center">Loading map...</div>
+});
 
 export default function ResultPage() {
   const [soilColor, setSoilColor] = useState("");
@@ -35,51 +40,66 @@ export default function ResultPage() {
   const [lon, setLon] = useState<number | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
-  // Dynamically import MapContainer and related components to avoid SSR issues
-  const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
-  const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
-  const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
+  // Set mounted flag after component mounts
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("uploadResult");
-    console.log("sessionStorage uploadResult (on result page):", stored);
-    if (stored) {
-      const { result, fileName, previewUrl } = JSON.parse(stored);
-      setResult(result);
-      setFileName(fileName);
-      setPreviewUrl(previewUrl);
-      console.log("Loaded result:", result);
-      // Normalization helper
-      const normalize = (s: string) => s?.toString().trim().toLowerCase();
-      // Dropdown options
-      const colorOptions = ["Brown", "Dark Brown", "Reddish", "Yellowish", "Black", "Gray"];
-      const locationOptions = ["Valley", "Slope", "Plain", "Hill", "Riverbank", "Coastal", "Plateau"];
-      const textureOptions = ["Sandy", "Silty", "Clayey", "Loamy", "Peaty", "Gravelly"];
-      const fertilityOptions = ["High", "Medium", "Low", "Very Low"];
-      const drainageOptions = ["Well-drained", "Poorly-drained", "Moderately-drained", "Excessively-drained", "Waterlogged"];
-      const moistureOptions = ["Wet", "Moist", "Dry", "Very Dry", "Waterlogged"];
-      if (result?.characteristics) {
-        const c = result.characteristics;
-        const findMatch = (val: string, opts: string[]) => opts.find(opt => normalize(opt) === normalize(val)) || opts[0];
-        setSoilColor(findMatch(c.soil_color, colorOptions));
-        setSoilTexture(findMatch(c.soil_texture, textureOptions));
-        setSoilDrainage(findMatch(c.soil_drainage, drainageOptions));
-        setSoilLocationType(findMatch(c.soil_location_type, locationOptions));
-        setSoilFertility(findMatch(c.soil_fertility, fertilityOptions));
-        setSoilMoisture(findMatch(c.soil_moisture, moistureOptions));
+    // Only run this effect after component is mounted
+    if (!isMounted) return;
+
+    try {
+      const stored = sessionStorage.getItem("uploadResult");
+      console.log("sessionStorage uploadResult (on result page):", stored);
+      if (stored) {
+        const { result, fileName, previewUrl } = JSON.parse(stored);
+        setResult(result);
+        setFileName(fileName);
+        setPreviewUrl(previewUrl);
+        console.log("Loaded result:", result);
+        
+        // Normalization helper
+        const normalize = (s: string) => s?.toString().trim().toLowerCase();
+        
+        // Dropdown options
+        const colorOptions = ["Brown", "Dark Brown", "Reddish", "Yellowish", "Black", "Gray"];
+        const locationOptions = ["Valley", "Slope", "Plain", "Hill", "Riverbank", "Coastal", "Plateau"];
+        const textureOptions = ["Sandy", "Silty", "Clayey", "Loamy", "Peaty", "Gravelly"];
+        const fertilityOptions = ["High", "Medium", "Low", "Very Low"];
+        const drainageOptions = ["Well-drained", "Poorly-drained", "Moderately-drained", "Excessively-drained", "Waterlogged"];
+        const moistureOptions = ["Wet", "Moist", "Dry", "Very Dry", "Waterlogged"];
+        
+        if (result?.characteristics) {
+          const c = result.characteristics;
+          const findMatch = (val: string, opts: string[]) => opts.find(opt => normalize(opt) === normalize(val)) || opts[0];
+          setSoilColor(findMatch(c.soil_color, colorOptions));
+          setSoilTexture(findMatch(c.soil_texture, textureOptions));
+          setSoilDrainage(findMatch(c.soil_drainage, drainageOptions));
+          setSoilLocationType(findMatch(c.soil_location_type, locationOptions));
+          setSoilFertility(findMatch(c.soil_fertility, fertilityOptions));
+          setSoilMoisture(findMatch(c.soil_moisture, moistureOptions));
+        }
+      } else {
+        router.push("/upload");
       }
-    } else {
+    } catch (error) {
+      console.error("Error loading from sessionStorage:", error);
       router.push("/upload");
     }
-  }, [router]);
+  }, [router, isMounted]);
 
   useEffect(() => {
-    // Try to get user location on mount
+    // Only run geolocation after component is mounted
+    if (!isMounted) return;
+
     setLocationLoading(true);
     setLocationError("");
-    if (navigator.geolocation) {
+    
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           setLat(pos.coords.latitude);
@@ -95,37 +115,7 @@ export default function ResultPage() {
       setLocationError("Geolocation is not supported by this browser.");
       setLocationLoading(false);
     }
-  }, []);
-
-  // Custom component for picking location on the map
-  function LocationPicker({ lat, lon, setLat, setLon }: { lat: number | null, lon: number | null, setLat: (v: number) => void, setLon: (v: number) => void }) {
-    // eslint-disable-next-line
-    require("react-leaflet").useMapEvents({
-      click(e: { latlng: { lat: number; lng: number } }) {
-        setLat(e.latlng.lat);
-        setLon(e.latlng.lng);
-      },
-    });
-    return lat && lon ? (
-      <Marker
-        position={[lat, lon] as LatLngExpression}
-        // draggable is not a valid prop in react-leaflet v4+, use eventHandlers instead
-        eventHandlers={{
-          dragend: (e: L.LeafletEvent) => {
-            const marker = e.target as L.Marker;
-            const position = marker.getLatLng();
-            setLat(position.lat);
-            setLon(position.lng);
-          },
-        }}
-        icon={L.icon({
-          iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-        })}
-      />
-    ) : null;
-  }
+  }, [isMounted]);
 
   const Dropdown = ({
     label,
@@ -160,6 +150,7 @@ export default function ResultPage() {
     setSubmitLoading(true);
     setSubmitError("");
     setSubmitResult(null);
+    
     try {
       const payload = {
         classified_soil_type: result?.characteristics?.classified_soil_type || "",
@@ -171,14 +162,20 @@ export default function ResultPage() {
         soil_moisture: soilMoisture,
         ...(lat !== null && lon !== null ? { lat, lon } : {}),
       };
+      
       const data = await apiFetch("/soil/submit", {
         method: "POST",
         body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },
       });
+      
       setSubmitResult(data);
-      sessionStorage.setItem("cropResult", JSON.stringify(data));
-      window.location.href = "/upload/crop-result";
+      
+      if (isMounted && typeof sessionStorage !== "undefined") {
+        sessionStorage.setItem("cropResult", JSON.stringify(data));
+      }
+      
+      router.push("/upload/crop-result");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setSubmitError(err.message);
@@ -189,6 +186,26 @@ export default function ResultPage() {
       setSubmitLoading(false);
     }
   };
+
+  // Show loading state during hydration
+  if (!isMounted) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen relative overflow-hidden bg-secondary-ecru">
+          <div className="absolute inset-0 bg-contain bg-bottom bg-no-repeat"
+               style={{ backgroundImage: "url('/result-bg.png')" }}>
+          </div>
+          <div className="relative z-10 container mx-auto px-6 py-12">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold text-primary-brunswick-green mb-2">
+                Loading...
+              </h1>
+            </div>
+          </div>
+        </div>
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>
@@ -251,28 +268,23 @@ export default function ResultPage() {
                     {locationError && (
                       <div className="text-red-500 text-center mb-2">{locationError}</div>
                     )}
+                    
                     <div className="mb-4">
                       <div className="text-xs text-white mb-2">Click on the map or drag the marker to set your location.</div>
                       <label className="block text-white font-medium mb-2">Pick Location on Map</label>
                       <div className="rounded-lg overflow-hidden border border-gray-300" style={{ height: 300 }}>
-                        <MapContainer
-                          center={[(lat ?? -6.2), (lon ?? 106.8)] as LatLngExpression}
-                          zoom={13}
-                          style={{ height: 300, width: "100%" }}
-                          scrollWheelZoom={true}
-                        >
-                          <TileLayer
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            // Remove invalid 'attribution' prop if not supported, or use correct prop if needed
-                            attribution="&copy; OpenStreetMap contributors"
-                          />
-                          <LocationPicker lat={lat} lon={lon} setLat={setLat} setLon={setLon} />
-                        </MapContainer>
+                        <MapComponent 
+                          lat={lat} 
+                          lon={lon} 
+                          setLat={setLat} 
+                          setLon={setLon} 
+                        />
                       </div>
                       {lat && lon && (
                         <div className="text-xs text-white mt-2">Selected: {lat.toFixed(5)}, {lon.toFixed(5)}</div>
                       )}
                     </div>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                       <Dropdown
                         label="Soil Color"
@@ -311,6 +323,7 @@ export default function ResultPage() {
                         options={["Wet", "Moist", "Dry", "Very Dry", "Waterlogged"]}
                       />
                     </div>
+                    
                     <Button
                       className="w-full p-4 bg-primary-sea-green hover:bg-white text-white hover:text-primary-sea-green font-bold rounded-md transition-colors duration-200"
                       size="lg"
