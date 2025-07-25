@@ -23,13 +23,6 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Export static files (if using static export)
-        run: |
-          if [ -f next.config.js ] && grep -q 'output:.*export' next.config.*; then
-            npm run export
-          fi
-        continue-on-error: true
-
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
@@ -39,12 +32,18 @@ jobs:
 
       - name: Deploy to server via rsync
         run: |
-          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' .next/ ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/home/propenchill/gro-fe/.next/
-          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' public/ ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/home/propenchill/gro-fe/public/
-          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' package.json ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/home/propenchill/gro-fe/
-          rsync -avz --delete --exclude='.git/' --exclude='node_modules/' next.config.ts ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/home/propenchill/gro-fe/
+          # Deploy all necessary files
+          rsync -avz --delete \
+            --exclude='.git/' \
+            --exclude='node_modules/' \
+            --exclude='.env.local' \
+            --exclude='.env*.local' \
+            ./ ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }}:/home/propenchill/gro-fe/
 
-      # Optionally, restart your frontend service (e.g., pm2, systemctl, etc.)
-      # - name: Restart frontend service
-      #   run: |
-      #     ssh ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }} 'pm2 restart your-frontend-app' 
+      - name: Install dependencies and restart service on server
+        run: |
+          ssh ${{ secrets.FRONTEND_SERVER_USER }}@${{ secrets.FRONTEND_SERVER_HOST }} '
+            cd /home/propenchill/gro-fe
+            npm ci --production
+            pm2 reload ecosystem.config.js --update-env
+          '
