@@ -45,9 +45,7 @@ export default function HomePage() {
             </h1>
             <p className="lg:text-2xl leading-snug lg:mt-1 mt-5 text-sm">
               Grounded decisions begin with{" "}
-              <span className="font-semibold italic text-primary-sea-green">
-                Grō.
-              </span>
+              <img src="/gro-text.svg" className="lg:h-7 h-5 inline align-bottom" />
             </p>
             <button
               onClick={handleActionClick}
